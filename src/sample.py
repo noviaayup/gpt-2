@@ -1,6 +1,7 @@
 import tensorflow as tf
 
 import model
+import pdb
 
 def top_k_logits(logits, k):
     if k == 0:
@@ -74,7 +75,8 @@ def sample_sequence(*, hparams, length, start_token=None, batch_size=None, conte
                 tf.concat([output, samples], axis=1),
             ]
 
-        def cond(*args):
+        def cond(past, prev, output): # args are the loop_vars elements
+            # Here break if the final token is a newline [198]
             return True
 
         _, _, tokens = tf.while_loop(
