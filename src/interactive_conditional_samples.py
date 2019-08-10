@@ -69,7 +69,7 @@ def interact_model(
         ckpt = tf.train.latest_checkpoint(os.path.join('models', model_name))
         saver.restore(sess, ckpt)
 
-        hist = ""
+        hist_buf = []
         while True:
             raw_text = input("INPUT: ")
             while not raw_text:
@@ -78,8 +78,13 @@ def interact_model(
             # check if raw text contains a \n
             # raw_text = "Hey joe how are you?"
             # print(raw_text)
-            print("###>\n"+hist+"INPUT: "+raw_text+"\n\nJoe Rogan:"+"\n###<")
-            context_tokens = enc.encode(hist+"INPUT: "+raw_text+"\n\nJoe Rogan:")
+            hist = ''.join(hist_buf[-3:])
+            print('###>')
+            print(hist)
+            print('###<')
+            # print("###>\n"+hist+"[INPUT]: "+raw_text+"\n\n[Joe Rogan]:"+"\n###<")
+            # print(''.join(hist_buf))
+            context_tokens = enc.encode(hist+"[INPUT]: "+raw_text+"\n\n[Joe Rogan]:")
             generated = 0
             for _ in range(nsamples // batch_size):
                 out = sess.run(output, feed_dict={
@@ -90,10 +95,14 @@ def interact_model(
                     text = enc.decode(out[i])
                     # print("=" * 40 + " SAMPLE " + str(generated) + " " + "=" * 40)
                     print(text)
+                    print()
                     trunc_text = text.split('\n')[0]
-                    print("Joe Rogan: "+ trunc_text)
+                    print("Joe Rogan:"+ trunc_text)
             # print("=" * 80)
-            hist = "INPUT: "+raw_text+"\n\nJoe Rogan: "+trunc_text+"\n\n"
+            # Try and concat the last n exchanges
+            # hist = hist+"[INPUT]: "+raw_text+"\n\n[Joe Rogan]:"+trunc_text+"\n\n"
+            # After about 10 back to back exchanges it goes over the 1024 limit and crashes
+            hist_buf.append("[INPUT]: "+raw_text+"\n\n[Joe Rogan]:"+trunc_text+"\n\n")
 
 if __name__ == '__main__':
     fire.Fire(interact_model)
