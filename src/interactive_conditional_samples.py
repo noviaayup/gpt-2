@@ -8,7 +8,6 @@ import tensorflow as tf
 
 import model, sample, encoder 
 from tensorflow.python import debug as tf_debug
-tf.enable_eager_execution()
 
 def interact_model(
     model_name='117M',
@@ -79,9 +78,9 @@ def interact_model(
             # raw_text = "Hey joe how are you?"
             # print(raw_text)
             hist = ''.join(hist_buf[-3:])
-            print('###>')
-            print(hist)
-            print('###<')
+            # print('###>')
+            # print(hist)
+            # print('###<')
             # print("###>\n"+hist+"[INPUT]: "+raw_text+"\n\n[Joe Rogan]:"+"\n###<")
             # print(''.join(hist_buf))
             context_tokens = enc.encode(hist+"[INPUT]: "+raw_text+"\n\n[Joe Rogan]:")
@@ -94,8 +93,8 @@ def interact_model(
                     generated += 1
                     text = enc.decode(out[i])
                     # print("=" * 40 + " SAMPLE " + str(generated) + " " + "=" * 40)
-                    print(text)
-                    print()
+                    # print(text)
+                    # print()
                     trunc_text = text.split('\n')[0]
                     print("Joe Rogan:"+ trunc_text)
             # print("=" * 80)
